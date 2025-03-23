@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+</head>
+<body>
+    <h1>My Todo List</h1>
+    
+    <!-- Form to add new task -->
+    <h2>Add a Task</h2>
+    <form action="/add_task" method="POST">
+        <input type="text" name="task" placeholder="Enter new task" required>
+        <button type="submit">Add Task</button>
+    </form>
+
+    <!-- Display tasks -->
+    <h2>Tasks</h2>
+    <ul>
+        {% for todo in todos %}
+            <li>{{ todo[2] }} - {{ todo[3] }}</li>
+        {% else %}
+            <li>No tasks found</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Logout link -->
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>
