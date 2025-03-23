@@ -38,7 +38,7 @@ def login():
             return redirect(url_for('todo'))  # Redirect to the todo page
         else:
             return 'Invalid credentials. Please try again.'
-    return render_template('login.html')
+    return render_template('login.html', title='Login')  # Ensure CSS is linked in login.html
 
 @app.route('/todo')
 def todo():
