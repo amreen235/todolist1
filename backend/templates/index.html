@@ -3,10 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo List</title>
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Welcome to the Todo List App!</h1>
-    <button><a href="/login">Login</a></button>
+    <div class="fullscreen-container">
+        <div class="centered-content">
+            <h1>Welcome to the To-Do App</h1>
+            <p>Organize your tasks and boost your productivity.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('login') }}" class="btn">Login</a>
+                <a href="/signup" class="btn btn-secondary">Sign Up</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

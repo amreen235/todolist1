@@ -4,28 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todo List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>My Todo List</h1>
-    
-    <!-- Form to add new task -->
-    <h2>Add a Task</h2>
-    <form action="/add_task" method="POST">
-        <input type="text" name="task" placeholder="Enter new task" required>
-        <button type="submit">Add Task</button>
-    </form>
-
-    <!-- Display tasks -->
-    <h2>Tasks</h2>
-    <ul>
-        {% for todo in todos %}
-            <li>{{ todo[2] }} - {{ todo[3] }}</li>
-        {% else %}
-            <li>No tasks found</li>
-        {% endfor %}
-    </ul>
-
-    <!-- Logout link -->
-    <a href="{{ url_for('logout') }}">Logout</a>
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <ul>
+            <li><a href="{{ url_for('todo') }}">To-Do List</a></li>
+            <li><a href="/add-task">Add Task</a></li>
+            <li><a href="/completed-tasks">Completed Tasks</a></li>
+            <li><a href="/profile">Profile</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="fullscreen-container">
+            <div class="centered-content">
+                <h1>Your To-Do List</h1>
+                <p>Stay productive and manage your tasks efficiently.</p>
+                <table class="todo-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for todo in todos %}
+                        <tr>
+                            <td>{{ todo[2] }}</td> <!-- Description -->
+                            <td>{{ todo[3] }}</td> <!-- Status -->
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="2">No tasks found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
