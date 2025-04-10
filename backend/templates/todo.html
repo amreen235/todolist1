@@ -11,9 +11,9 @@
         <h2>Menu</h2>
         <ul>
             <li><a href="{{ url_for('todo') }}">To-Do List</a></li>
-            <li><a href="/add-task">Add Task</a></li>
-            <li><a href="/completed-tasks">Completed Tasks</a></li>
-            <li><a href="/profile">Profile</a></li>
+            <li><a href="{{ url_for('add_task') }}">Add Task</a></li>
+            <li><a href="{{ url_for('completed_tasks') }}">Completed Tasks</a></li>
+            <li><a href="{{ url_for('profile') }}">Profile</a></li>
             <li><a href="{{ url_for('logout') }}">Logout</a></li>
         </ul>
     </div>
@@ -26,18 +26,36 @@
                     <thead>
                         <tr>
                             <th>Description</th>
+                            <th>Date & Time</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for todo in todos %}
                         <tr>
-                            <td>{{ todo[2] }}</td> <!-- Description -->
-                            <td>{{ todo[3] }}</td> <!-- Status -->
+                            <td>{{ todo[4] }}</td>
+                            <td>
+                                {% if todo[2] %}
+                                    {{ todo[2].strftime('%Y-%m-%d %H:%M:%S') }}
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </td>
+                            <td>{{ 'Completed' if todo[3] else 'Not Completed' }}</td>
+                            <td>
+                                {% if not todo[3] %}
+                                    <form method="POST" action="{{ url_for('mark_completed', task_id=todo[0]) }}">
+                                        <button type="submit">Mark Completed</button>
+                                    </form>
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </td>
                         </tr>
                         {% else %}
                         <tr>
-                            <td colspan="2">No tasks found</td>
+                            <td colspan="4">No tasks found</td>
                         </tr>
                         {% endfor %}
                     </tbody>
