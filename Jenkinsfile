@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'python:3.10'
+            image 'python:3.10-slim-buster'
             args '-u root'  // Run container as root so we can install if needed
         }
     }
