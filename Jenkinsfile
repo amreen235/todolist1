@@ -4,6 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'todolist-app'
         CONTAINER_NAME = 'todolist-container'
+        APP_PORT = '8080' // Updated port to 8080
     }
 
     stages {
@@ -26,7 +27,7 @@ pipeline {
                 // Stop & remove existing container if running
                 sh '''
                     docker rm -f $CONTAINER_NAME || true
-                    docker run -d -p 8000:8000 --name $CONTAINER_NAME $IMAGE_NAME
+                    docker run -d -p $APP_PORT:$APP_PORT --name $CONTAINER_NAME $IMAGE_NAME
                 '''
             }
         }

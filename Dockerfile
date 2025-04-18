@@ -13,8 +13,8 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 # Copy the entire application code into the container
 COPY . /app
 
-# Expose port 5000 (if that's the port your app uses)
-EXPOSE 5000
+# Expose port 8080 (since you're using port 8080)
+EXPOSE 8080
 
 # Set the entry point to run your app
 CMD ["python", "backend/app.py"]
