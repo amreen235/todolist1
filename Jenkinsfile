@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'ubuntu:latest' // Ensures /bin/sh is available
+            args '-u root' // Optional: run as root for docker access
+        }
+    }
 
     environment {
         IMAGE_NAME = 'todolist-app'
@@ -24,7 +29,6 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 echo '🚀 Running Docker Container...'
-                // Stop & remove existing container if running
                 sh '''
                     docker rm -f $CONTAINER_NAME || true
                     docker run -d -p $APP_PORT:$APP_PORT --name $CONTAINER_NAME $IMAGE_NAME
