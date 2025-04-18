@@ -1,20 +1,14 @@
-# Use Python 3.9 slim image
-FROM python:3.9-slim
+FROM python:3.13-slim
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy only the requirements file first (for better caching during builds)
-COPY backend/requirements.txt /app/requirements.txt
+RUN apt-get update \
+    && apt-get install -y libpq-dev gcc \
+    && pip install --upgrade pip
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
-# Copy the entire application code into the container
-COPY . /app
+COPY . .
 
-# Expose port 8080 (since you're using port 8080)
-EXPOSE 8080
-
-# Set the entry point to run your app
 CMD ["python", "backend/app.py"]
