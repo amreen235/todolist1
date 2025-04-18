@@ -2,6 +2,7 @@ pipeline {
     agent {
         docker {
             image 'python:3.10'
+            args '-u root'  // Run container as root so we can install if needed
         }
     }
 
@@ -12,10 +13,11 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
                 echo '📦 Installing Python dependencies...'
                 sh '''
+                    apt-get update && apt-get install -y bash coreutils
                     python3 -m venv venv
                     . venv/bin/activate
                     pip install --upgrade pip
