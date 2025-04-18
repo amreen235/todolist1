@@ -1,40 +1,33 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.10-slim-buster'
-            args '-u root'  // Run container as root so we can install if needed
-        }
+    agent any
+
+    environment {
+        IMAGE_NAME = 'todolist-app'
+        CONTAINER_NAME = 'todolist-container'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/amreen235/todolist1.git'
+                git url: 'https://github.com/amreen235/todolist1.git', branch: 'main'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                echo '📦 Installing Python dependencies...'
+                echo '🔧 Building Docker Image...'
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                echo '🚀 Running Docker Container...'
+                // Stop & remove existing container if running
                 sh '''
-                    apt-get update && apt-get install -y bash coreutils
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    pip install --upgrade pip
-                    pip install -r backend/requirements.txt
+                    docker rm -f $CONTAINER_NAME || true
+                    docker run -d -p 8000:8000 --name $CONTAINER_NAME $IMAGE_NAME
                 '''
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                echo '✅ Tests can be added here later.'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo '🚀 Deploy stage placeholder.'
             }
         }
     }
