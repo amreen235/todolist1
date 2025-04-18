@@ -5,13 +5,13 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out code...'
-                checkout([ 
-                    $class: 'GitSCM', 
-                    branches: [[name: '*/main']], 
-                    extensions: [], 
-                    userRemoteConfigs: [[ 
-                        url: 'https://github.com/amreen235/todolist1.git',
-                    ]] 
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    extensions: [],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/amreen235/todolist1.git'
+                    ]]
                 ])
             }
         }
@@ -19,7 +19,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building Docker Compose services...'
-                bat 'docker-compose -p todolist1 build'
+                sh 'docker-compose -p todolist1 build'
             }
         }
 
@@ -32,7 +32,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying the application using Docker Compose...'
-                bat 'docker-compose -p todolist1 up -d'
+                sh 'docker-compose -p todolist1 up -d'
             }
         }
     }
