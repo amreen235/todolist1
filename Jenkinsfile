@@ -10,7 +10,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                echo '📦 Installing Python dependencies...'
+                 echo '📦 Installing Python dependencies...'
                 sh '''
                     python3 -m venv venv
                     source venv/bin/activate
