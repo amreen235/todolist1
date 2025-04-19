@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        PATH = "/usr/local/bin:/usr/bin:/bin" // Adjust the paths as needed
         PROJECT_NAME         = 'todolist1'
         IMAGE_NAME           = "${PROJECT_NAME}:latest"
         DOCKER_REGISTRY      = 'docker.io/myorg'
