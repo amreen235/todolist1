@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out code...'
-               git branch: 'main', git url: 'https://github.com/amreen235/todolist1.git'
+                git branch: 'main', url: 'https://github.com/amreen235/todolist1.git'
             }
         }
 
