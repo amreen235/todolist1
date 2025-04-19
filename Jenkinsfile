@@ -2,13 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Clean Workspace') {
-            steps {
-                echo 'Cleaning workspace...'
-                cleanWs()
-            }
-        }
-
         stage('Build') {
             steps {
                 echo 'Building Flask app...'
@@ -22,14 +15,14 @@ pipeline {
         stage('Run Test') {
             steps {
                 echo 'Running tests...'
-                // e.g. sh 'pytest tests/'
+                // Add test commands here if needed
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying Flask app...'
-                // Add deployment logic here
+                // Add deploy steps
             }
         }
     }
