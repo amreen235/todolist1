@@ -2,86 +2,85 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_NAME         = 'todolist1'  // Aligning with your project name
-        IMAGE_NAME           = "${PROJECT_NAME}:latest"
-        DOCKER_REGISTRY      = 'docker.io/myorg'  // Replace with your Docker registry if needed
-        REGISTRY_CREDENTIALS = 'dockerhub-creds'  // Credentials for Docker registry
+        PROJECT_NAME     = 'todolist1'
+        IMAGE_NAME       = "${PROJECT_NAME}:latest"
+        CONTAINER_NAME   = 'todolist1-container'
+        PORT             = '3000'
+        DOCKER_REGISTRY  = 'docker.io/myorg'
+        REGISTRY_CREDENTIALS = 'dockerhub-creds'
     }
 
     stages {
+        stage('Clone Repository') {
+            steps {
+                echo 'Repository is automatically cloned by Jenkins (SCM configured)'
+            }
+        }
+
         stage('Checkout Code') {
             steps {
                 echo 'Checking out source code...'
                 script {
-                    // If SCM is defined in Jenkins, use it, otherwise fetch from GitHub
                     if (scm) {
                         checkout scm
                     } else {
                         checkout([
                             $class: 'GitSCM',
-                            branches: [[name: '*/main']],  // Change this to your branch if different
-                            userRemoteConfigs: [[url: 'https://github.com/amreen235/todolist1.git']]  // Your repo URL
+                            branches: [[name: '*/main']],
+                            userRemoteConfigs: [[url: 'https://github.com/amreen235/todolist1.git']]
                         ])
                     }
                 }
             }
         }
 
-        stage('Build Image') {
+        stage('Build Docker Image') {
             steps {
                 echo "Building Docker image: ${IMAGE_NAME}"
-                script {
-                    // Docker build command, without sudo as Jenkins user has Docker permissions
-                    sh '''
-                        #!/bin/bash
-                        export DOCKER_BUILDKIT=1
-                        docker build -t ${IMAGE_NAME} .
-                    '''
-                }
+                sh '''
+                    docker build -t ${IMAGE_NAME} .
+                '''
             }
         }
 
-        stage('Run Tests') {
+        stage('Stop Old Container') {
             steps {
-                echo 'Running tests...'
-                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                    script {
-                        // Running tests inside the Docker container
-                        sh '''
-                            #!/bin/bash
-                            docker run --rm ${IMAGE_NAME} npm test
-                        '''
-                    }
-                }
+                echo 'Stopping any existing container...'
+                sh '''
+                    docker stop ${CONTAINER_NAME} || true
+                '''
             }
         }
 
-        stage('Deploy') {
+        stage('Remove Old Container') {
             steps {
-                echo 'Deploying app...'
-                script {
-                    // Stop and remove any existing container before running the new one
-                    sh '''
-                        #!/bin/bash
-                        docker stop ${PROJECT_NAME} || true
-                        docker rm ${PROJECT_NAME} || true
-                        docker run -d --name ${PROJECT_NAME} -p 3000:3000 ${IMAGE_NAME}
-                    '''
-                }
+                echo 'Removing any existing container...'
+                sh '''
+                    docker rm ${CONTAINER_NAME} || true
+                '''
+            }
+        }
+
+        stage('Run New Container') {
+            steps {
+                echo 'Running new container...'
+                sh '''
+                    docker run -d -p ${PORT}:${PORT} --name ${CONTAINER_NAME} ${IMAGE_NAME}
+                '''
+            }
+        }
+
+        stage('List Running Containers') {
+            steps {
+                echo 'Listing all running containers...'
+                sh 'docker ps'
             }
         }
     }
 
     post {
         always {
-            echo 'Cleaning up unused resources...'
-            script {
-                // Prune Docker system to remove unused containers, images, networks, etc.
-                sh '''
-                    #!/bin/bash
-                    docker system prune -f || true
-                '''
-            }
+            echo 'Pipeline run finished.'
         }
     }
 }
