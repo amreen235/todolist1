@@ -29,8 +29,12 @@ pipeline {
         stage('Build Image') {
             steps {
                 echo "Building Docker image: ${IMAGE_NAME}"
-                sh 'export DOCKER_BUILDKIT=1'
-                sh "docker build -t ${IMAGE_NAME} ."
+                sh '''
+                    #!/bin/bash
+                    source /etc/profile
+                    export DOCKER_BUILDKIT=1
+                    docker build -t ${IMAGE_NAME} .
+                '''
             }
         }
 
@@ -38,7 +42,11 @@ pipeline {
             steps {
                 echo 'Running tests...'
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                    sh "docker run --rm ${IMAGE_NAME} npm test"
+                    sh '''
+                        #!/bin/bash
+                        source /etc/profile
+                        docker run --rm ${IMAGE_NAME} npm test
+                    '''
                 }
             }
         }
@@ -46,9 +54,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying app...'
-                sh "docker stop ${PROJECT_NAME} || true"
-                sh "docker rm ${PROJECT_NAME} || true"
-                sh "docker run -d --name ${PROJECT_NAME} -p 3000:3000 ${IMAGE_NAME}"
+                sh '''
+                    #!/bin/bash
+                    source /etc/profile
+                    docker stop ${PROJECT_NAME} || true
+                    docker rm ${PROJECT_NAME} || true
+                    docker run -d --name ${PROJECT_NAME} -p 3000:3000 ${IMAGE_NAME}
+                '''
             }
         }
     }
@@ -56,7 +68,11 @@ pipeline {
     post {
         always {
             echo 'Cleaning up unused resources...'
-            sh "docker system prune -f || true"
+            sh '''
+                #!/bin/bash
+                source /etc/profile
+                docker system prune -f || true
+            '''
         }
     }
 }
