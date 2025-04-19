@@ -15,7 +15,7 @@ stage('Build') {
         // Create and activate virtual environment (Linux/macOS)
         sh 'python3 -m venv venv'  // Create virtual environment
         sh 'source venv/bin/activate'  // Activate virtual environment
-sh 'pip install -r backend/requirements.txt'
+        sh 'pip install -r requirements.txt'  // Install dependencies
     }
 }
 
