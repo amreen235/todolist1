@@ -2,22 +2,19 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Clean Workspace') {
             steps {
                 echo 'Cleaning workspace...'
-                cleanWs() // Make sure to install "Workspace Cleanup Plugin"
-                
-                echo 'Checking out code...'
-                git branch: 'main', url: 'https://github.com/amreen235/todolist1.git'
+                cleanWs()
             }
         }
 
         stage('Build') {
             steps {
                 echo 'Building Flask app...'
-                dir('backend') { // since requirements.txt is inside backend
-                    sh 'python3 -m venv venv' // Create virtual environment
-                    sh '. venv/bin/activate && pip install -r requirements.txt' // Activate venv and install dependencies
+                dir('backend') {
+                    sh 'python3 -m venv venv'
+                    sh '. venv/bin/activate && pip install -r requirements.txt'
                 }
             }
         }
@@ -25,14 +22,14 @@ pipeline {
         stage('Run Test') {
             steps {
                 echo 'Running tests...'
-                // Add test commands here if needed, e.g. pytest
+                // e.g. sh 'pytest tests/'
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying Flask app...'
-                // Add deployment logic if needed
+                // Add deployment logic here
             }
         }
     }
