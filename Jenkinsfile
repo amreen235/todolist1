@@ -12,21 +12,21 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building Flask app...'
-                // We'll add specific build steps later
+                // Add your build commands here, like 'sh "pip install -r requirements.txt"'
             }
         }
 
         stage('Run Test') {
             steps {
                 echo 'Running tests...'
-                // Test commands go here
+                // Add your test commands here, like 'sh "pytest"'
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying Flask app...'
-                // Deployment steps will go here
+                // Add deployment commands here, like 'sh "./deploy.sh"'
             }
         }
     }
