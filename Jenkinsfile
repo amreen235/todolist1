@@ -2,10 +2,10 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_NAME         = 'todolist1'
+        PROJECT_NAME         = 'todolist1'  // Aligning with your project name
         IMAGE_NAME           = "${PROJECT_NAME}:latest"
-        DOCKER_REGISTRY      = 'docker.io/myorg'
-        REGISTRY_CREDENTIALS = 'dockerhub-creds'
+        DOCKER_REGISTRY      = 'docker.io/myorg'  // Replace with your Docker registry if needed
+        REGISTRY_CREDENTIALS = 'dockerhub-creds'  // Credentials for Docker registry
     }
 
     stages {
@@ -13,13 +13,14 @@ pipeline {
             steps {
                 echo 'Checking out source code...'
                 script {
+                    // If SCM is defined in Jenkins, use it, otherwise fetch from GitHub
                     if (scm) {
                         checkout scm
                     } else {
-                        checkout([ 
+                        checkout([
                             $class: 'GitSCM',
-                            branches: [[name: '*/main']],
-                            userRemoteConfigs: [[url: 'https://github.com/amreen235/todolist1.git']]
+                            branches: [[name: '*/main']],  // Change this to your branch if different
+                            userRemoteConfigs: [[url: 'https://github.com/amreen235/todolist1.git']]  // Your repo URL
                         ])
                     }
                 }
@@ -30,7 +31,7 @@ pipeline {
             steps {
                 echo "Building Docker image: ${IMAGE_NAME}"
                 script {
-                    // Docker build command without sudo
+                    // Docker build command, without sudo as Jenkins user has Docker permissions
                     sh '''
                         #!/bin/bash
                         export DOCKER_BUILDKIT=1
@@ -45,6 +46,7 @@ pipeline {
                 echo 'Running tests...'
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
                     script {
+                        // Running tests inside the Docker container
                         sh '''
                             #!/bin/bash
                             docker run --rm ${IMAGE_NAME} npm test
@@ -58,6 +60,7 @@ pipeline {
             steps {
                 echo 'Deploying app...'
                 script {
+                    // Stop and remove any existing container before running the new one
                     sh '''
                         #!/bin/bash
                         docker stop ${PROJECT_NAME} || true
@@ -73,6 +76,7 @@ pipeline {
         always {
             echo 'Cleaning up unused resources...'
             script {
+                // Prune Docker system to remove unused containers, images, networks, etc.
                 sh '''
                     #!/bin/bash
                     docker system prune -f || true
