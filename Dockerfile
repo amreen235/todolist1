@@ -1,14 +1,16 @@
-FROM python:3.13-slim
+FROM python:3.10-slim
 
+# Set working directory
 WORKDIR /app
 
-RUN apt-get update \
-    && apt-get install -y libpq-dev gcc \
-    && pip install --upgrade pip
+# Copy everything from the backend folder into the container
+COPY backend/ /app/backend/
 
-COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+# Install dependencies
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 
-COPY . .
+# Expose Flask port
+EXPOSE 5000
 
-CMD ["python", "backend/app.py"]
+# Run the Flask app
+CMD ["python", "/app/backend/app.py"]
