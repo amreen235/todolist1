@@ -2,77 +2,61 @@ pipeline {
     agent any
 
     environment {
-        PROJECT_NAME     = 'todolist1'
-        IMAGE_NAME       = "${PROJECT_NAME}:latest"
-        CONTAINER_NAME   = 'todolist1-container'
-        PORT             = '3000'
-        DOCKER_REGISTRY  = 'docker.io/myorg'
-        REGISTRY_CREDENTIALS = 'dockerhub-creds'
+        REPO_URL = 'https://github.com/your-username/your-repo.git'  // Replace with your actual repository URL
+        IMAGE_NAME = 'my-jenkins-docker'  // Replace with your Docker image name
+        CONTAINER_NAME = 'my-jenkins-docker'  // Replace with your container name
     }
 
     stages {
         stage('Clone Repository') {
             steps {
-                echo 'Repository is automatically cloned by Jenkins (SCM configured)'
+                echo 'Cloning repository manually...'
+                sh "git clone ${REPO_URL} repo"
             }
         }
 
         stage('Checkout Code') {
             steps {
                 echo 'Checking out source code...'
-                script {
-                    if (scm) {
-                        checkout scm
-                    } else {
-                        checkout([
-                            $class: 'GitSCM',
-                            branches: [[name: '*/main']],
-                            userRemoteConfigs: [[url: 'https://github.com/amreen235/todolist1.git']]
-                        ])
-                    }
+                dir('repo') {
+                    sh 'ls -la'  // This will list the files in the repo folder to ensure it's cloned
                 }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo "Building Docker image: ${IMAGE_NAME}"
-                sh '''
-                    docker build -t ${IMAGE_NAME} .
-                '''
+                echo 'Building Docker image...'
+                dir('repo') {
+                    sh "docker build -t ${IMAGE_NAME} ."
+                }
             }
         }
 
         stage('Stop Old Container') {
             steps {
-                echo 'Stopping any existing container...'
-                sh '''
-                    docker stop ${CONTAINER_NAME} || true
-                '''
+                echo 'Stopping old container (if running)...'
+                sh "docker stop ${CONTAINER_NAME} || true"
             }
         }
 
         stage('Remove Old Container') {
             steps {
-                echo 'Removing any existing container...'
-                sh '''
-                    docker rm ${CONTAINER_NAME} || true
-                '''
+                echo 'Removing old container (if exists)...'
+                sh "docker rm ${CONTAINER_NAME} || true"
             }
         }
 
         stage('Run New Container') {
             steps {
                 echo 'Running new container...'
-                sh '''
-                    docker run -d -p ${PORT}:${PORT} --name ${CONTAINER_NAME} ${IMAGE_NAME}
-                '''
+                sh "docker run -d --name ${CONTAINER_NAME} ${IMAGE_NAME}"
             }
         }
 
         stage('List Running Containers') {
             steps {
-                echo 'Listing all running containers...'
+                echo 'Listing running Docker containers...'
                 sh 'docker ps'
             }
         }
