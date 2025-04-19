@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REPO_URL = 'https://github.com/your-username/your-repo.git'  // Replace with your actual repository URL
+        REPO_URL = 'https://github.com/amreen235/todolist1.git'  // Replace with your actual repository URL
         IMAGE_NAME = 'my-jenkins-docker'  // Replace with your Docker image name
         CONTAINER_NAME = 'my-jenkins-docker'  // Replace with your container name
     }
