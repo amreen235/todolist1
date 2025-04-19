@@ -16,7 +16,7 @@ pipeline {
                     if (scm) {
                         checkout scm
                     } else {
-                        checkout([
+                        checkout([ 
                             $class: 'GitSCM',
                             branches: [[name: '*/main']],
                             userRemoteConfigs: [[url: 'https://github.com/amreen235/todolist1.git']]
@@ -29,12 +29,14 @@ pipeline {
         stage('Build Image') {
             steps {
                 echo "Building Docker image: ${IMAGE_NAME}"
-                sh '''
-                    #!/bin/bash
-                    source /etc/profile
-                    export DOCKER_BUILDKIT=1
-                    docker build -t ${IMAGE_NAME} .
-                '''
+                script {
+                    // Docker build command without sudo
+                    sh '''
+                        #!/bin/bash
+                        export DOCKER_BUILDKIT=1
+                        docker build -t ${IMAGE_NAME} .
+                    '''
+                }
             }
         }
 
@@ -42,11 +44,12 @@ pipeline {
             steps {
                 echo 'Running tests...'
                 catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                    sh '''
-                        #!/bin/bash
-                        source /etc/profile
-                        docker run --rm ${IMAGE_NAME} npm test
-                    '''
+                    script {
+                        sh '''
+                            #!/bin/bash
+                            docker run --rm ${IMAGE_NAME} npm test
+                        '''
+                    }
                 }
             }
         }
@@ -54,13 +57,14 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying app...'
-                sh '''
-                    #!/bin/bash
-                    source /etc/profile
-                    docker stop ${PROJECT_NAME} || true
-                    docker rm ${PROJECT_NAME} || true
-                    docker run -d --name ${PROJECT_NAME} -p 3000:3000 ${IMAGE_NAME}
-                '''
+                script {
+                    sh '''
+                        #!/bin/bash
+                        docker stop ${PROJECT_NAME} || true
+                        docker rm ${PROJECT_NAME} || true
+                        docker run -d --name ${PROJECT_NAME} -p 3000:3000 ${IMAGE_NAME}
+                    '''
+                }
             }
         }
     }
@@ -68,11 +72,12 @@ pipeline {
     post {
         always {
             echo 'Cleaning up unused resources...'
-            sh '''
-                #!/bin/bash
-                source /etc/profile
-                docker system prune -f || true
-            '''
+            script {
+                sh '''
+                    #!/bin/bash
+                    docker system prune -f || true
+                '''
+            }
         }
     }
 }
