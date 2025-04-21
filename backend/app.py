@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import psycopg2
 import datetime  # Import the datetime module
@@ -7,12 +8,17 @@ app.secret_key = 'your_secret_key'  # Needed for session management
 
 # Database connection function
 def get_db_connection():
+    dbname = os.getenv('DB_NAME', 'postgres')
+    user = os.getenv('DB_USER', 'postgres')
+    password = os.getenv('DB_PASSWORD', 'amreen123')
+    host = os.getenv('DB_HOST', 'localhost')
+    port = os.getenv('DB_PORT', '5432')
     return psycopg2.connect(
-        dbname='postgres',
-        user='postgres',
-        password='amreen123',
-        host='localhost',
-        port='5432'
+        dbname=dbname,
+        user=user,
+        password=password,
+        host=host,
+        port=port
     )
 
 # Homepage
@@ -263,4 +269,4 @@ def profile():
     )
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)

@@ -1,16 +1,28 @@
-FROM python:3.10-slim
+# Use official Python image
+FROM python:3.13-slim
 
-# Set working directory
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+
+# Set work directory
 WORKDIR /app
 
-# Copy everything from the backend folder into the container
-COPY backend/ /app/backend/
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y libpq-dev gcc \
+    && pip install --upgrade pip
 
-# Install dependencies
-RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-# Expose Flask port
+# Copy project files
+COPY . .
+
+# Expose default Django port
 EXPOSE 5000
 
-# Run the Flask app
-CMD ["python", "/app/backend/app.py"]
+# Run the application
+CMD ["python", "backend/app.py"]
